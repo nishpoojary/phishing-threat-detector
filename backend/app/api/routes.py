@@ -1,12 +1,10 @@
 from fastapi import APIRouter
 
-from app.schemas.email import EmailRequest, EmailResponse
-from app.schemas.url import URLRequest, URLResponse
+from backend.app.schemas.email import EmailRequest, EmailResponse
+from backend.app.schemas.url import URLRequest, URLResponse
 
-from app.services.detector import detect_phishing
-from app.services.url_detector import analyze_url
-
-
+from backend.app.services.detector import detect_phishing
+from backend.app.services.url_detector import analyze_url
 router = APIRouter(
     prefix="/api",
     tags=["Phishing Detection"]
