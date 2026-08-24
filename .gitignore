@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.env
+dataset/phishing_email.csv
+node_modules/
+dist/
