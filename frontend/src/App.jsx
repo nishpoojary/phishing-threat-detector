@@ -1,7 +1,24 @@
 import { useState } from "react";
 import "./App.css";
 
-const API_URL =  import.meta.env.VITE_API_URL;
+const configuredApiUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const API_URL = configuredApiUrl || (import.meta.env.DEV ? "http://127.0.0.1:8000" : "");
+
+function requireApiUrl() {
+  if (
+    import.meta.env.PROD &&
+    (!API_URL || /localhost|127\.0\.0\.1/.test(API_URL))
+  ) {
+    throw new Error("missing-production-api");
+  }
+}
+
+function connectionErrorMessage(error) {
+  if (error?.message === "missing-production-api") {
+    return "The frontend is not using your Render API. In Vercel → Settings → Environment Variables, set VITE_API_URL to your Render HTTPS URL (no trailing slash), then Redeploy.";
+  }
+  return "Could not connect to the detection server.";
+}
 
 function App() {
   const [activeTab, setActiveTab] = useState("email");
@@ -22,6 +39,7 @@ function App() {
     setLoading(true);
 
     try {
+      requireApiUrl();
       const response = await fetch(`${API_URL}/api/detect`, {
         method: "POST",
         headers: {
@@ -40,7 +58,7 @@ function App() {
       const data = await response.json();
       setEmailResult(data);
     } catch (error) {
-      alert("Could not connect to the detection server.");
+      alert(connectionErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -54,6 +72,7 @@ function App() {
     setLoading(true);
 
     try {
+      requireApiUrl();
       const response = await fetch(`${API_URL}/api/detect-url`, {
         method: "POST",
         headers: {
@@ -71,7 +90,7 @@ function App() {
       const data = await response.json();
       setUrlResult(data);
     } catch (error) {
-      alert("Could not connect to the detection server.");
+      alert(connectionErrorMessage(error));
     } finally {
       setLoading(false);
     }
